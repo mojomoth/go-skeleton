@@ -77,6 +77,20 @@ type ResponseBody struct {
 const SECRET_KEY = "WHd2RkZIWmFNVGFVcFpyZVhSekVZV0ppd2xxUE9zSUE="
 const URL = "https://6e875d362ca2402d8936c323c582701e.apigw.ntruss.com/custom/v1/5268/f6ccaa7ac017166dddc86d1b4d4f102653f7508a12365aaf50b913aee51b4a56"
 const CHATBOT_ID = "chatbot"
+const CHATBOT_NAME = "SOS봇"
+
+const (
+	INPUT_FORMAT  = "2006-01-02T15:04:05.999999999-07:00"
+	OUTPUT_FORMAT = "2006-01-02T15:04:05.000Z"
+)
+
+func timestampToJavaScriptISO(s string) (string, error) {
+	t, err := time.Parse(INPUT_FORMAT, s)
+	if err != nil {
+		return "", err
+	}
+	return t.UTC().Format(OUTPUT_FORMAT), nil
+}
 
 func chatbot(send chan<- []byte, command string) {
 	timestamp := time.Now().UnixNano() / 1000000
@@ -123,4 +137,17 @@ func chatbot(send chan<- []byte, command string) {
 	res := ResponseBody{}
 	json.Unmarshal(body, &res)
 	fmt.Println(res)
+
+	c := Chat{
+		Name:        CHATBOT_NAME,
+		Message:     string(body),
+		Client:      "",
+		CreatedAt:   time.Now().Format(time.RFC3339),
+		IsRead:      false,
+		MessageType: "admin",
+		ChatRoom:    "",
+	}
+
+	chatBytes, _ := json.Marshal(c)
+	send <- chatBytes
 }

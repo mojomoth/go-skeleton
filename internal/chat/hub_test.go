@@ -38,7 +38,7 @@ func TestChatbot(t *testing.T) {
 		Data: bubbleData,
 	}
 
-	requestBody := Body{
+	requestBody := RequestBody{
 		Version:   "v2",
 		UserId:    "test",
 		Timestamp: 123456,
