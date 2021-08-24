@@ -1,5 +1,5 @@
 #!/bin/bash
 
-PNAME=go-ws
+PNAME=sos-chat
 
 go build cmd/main.go && mv main $PNAME
