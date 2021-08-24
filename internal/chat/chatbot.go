@@ -74,10 +74,26 @@ type ResponseBody struct {
 	Event     string           `json:"event"`
 }
 
-const SECRET_KEY = "WHd2RkZIWmFNVGFVcFpyZVhSekVZV0ppd2xxUE9zSUE="
-const URL = "https://6e875d362ca2402d8936c323c582701e.apigw.ntruss.com/custom/v1/5268/f6ccaa7ac017166dddc86d1b4d4f102653f7508a12365aaf50b913aee51b4a56"
-const CHATBOT_ID = "chatbot"
-const CHATBOT_NAME = "SOS봇"
+type RequestDatabaseBody struct {
+	Name        string `json:"name"`
+	Message     string `json:"message"`
+	Client      string `json:"client"`
+	IsRead      bool   `json:"isRead"`
+	MessageType string `json:"messageType"`
+	ChatRoom    string `json:"chatRoom"`
+	CreatedAt   string `json:"createdAt"`
+}
+
+const (
+	SECRET_KEY   = "WHd2RkZIWmFNVGFVcFpyZVhSekVZV0ppd2xxUE9zSUE="
+	URL          = "https://6e875d362ca2402d8936c323c582701e.apigw.ntruss.com/custom/v1/5268/f6ccaa7ac017166dddc86d1b4d4f102653f7508a12365aaf50b913aee51b4a56"
+	CHATBOT_ID   = "chatbot"
+	CHATBOT_NAME = "SOS봇"
+)
+
+const (
+	API_URL = "http://15.165.32.229:11337/chats"
+)
 
 const (
 	INPUT_FORMAT  = "2006-01-02T15:04:05.999999999-07:00"
@@ -92,7 +108,7 @@ func timestampToJavaScriptISO(s string) (string, error) {
 	return t.UTC().Format(OUTPUT_FORMAT), nil
 }
 
-func chatbot(send chan<- []byte, command string) {
+func chatbot(send chan<- []byte, command string, chatroom string) {
 	timestamp := time.Now().UnixNano() / 1000000
 	bubbleData := BubbleData{
 		Description: command,
@@ -136,18 +152,48 @@ func chatbot(send chan<- []byte, command string) {
 
 	res := ResponseBody{}
 	json.Unmarshal(body, &res)
-	fmt.Println(res)
 
+	createdAt := time.Now().Format(time.RFC3339)
 	c := Chat{
 		Name:        CHATBOT_NAME,
 		Message:     string(body),
-		Client:      "",
-		CreatedAt:   time.Now().Format(time.RFC3339),
+		Client:      CHATBOT_ID,
+		CreatedAt:   createdAt,
 		IsRead:      false,
-		MessageType: "admin",
-		ChatRoom:    "",
+		MessageType: "chatbot",
+		ChatRoom:    chatroom,
 	}
 
 	chatBytes, _ := json.Marshal(c)
 	send <- chatBytes
+
+	saveChat(string(body), chatroom, createdAt)
+}
+
+func saveChat(message string, chatroom string, createdAt string) {
+	requestBody := RequestDatabaseBody{
+		Name:        CHATBOT_NAME,
+		Message:     message,
+		IsRead:      false,
+		MessageType: "chatbot",
+		ChatRoom:    chatroom,
+		CreatedAt:   createdAt,
+	}
+
+	b, _ := json.Marshal(requestBody)
+	fmt.Println(string(b))
+	req, _ := http.NewRequest("POST", API_URL, bytes.NewBuffer(b))
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+
+	fmt.Println("strapi response Status:", resp.Status)
+	fmt.Println("strapi response Body:", string(body))
 }

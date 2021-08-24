@@ -25,6 +25,7 @@ type Chat struct {
 	IsRead      bool   `json:"isRead"`
 	MessageType string `json:"messageType"`
 	ChatRoom    string `json:"chatRoom"`
+	Command     string `json:"command"`
 }
 
 func (h *hub) GetRooms() map[string]map[*Connection]bool {
@@ -76,13 +77,18 @@ func (h *hub) Run() {
 					// chatbot logic
 					b := Chat{}
 					json.Unmarshal(m.data, &b)
-					r := regexp.MustCompile("\\(\\/.*?\\)")
-					command := r.FindString(b.Message)
-					if command == "" {
-						continue
-					}
 
-					chatbot(c.send, command)
+					if b.Command != "" {
+						chatbot(c.send, b.Command, b.ChatRoom)
+					} else {
+						r := regexp.MustCompile("\\(\\/.*?\\)")
+						command := r.FindString(b.Message)
+						if command == "" {
+							continue
+						}
+
+						chatbot(c.send, command, b.ChatRoom)
+					}
 
 				default:
 					close(c.send)
