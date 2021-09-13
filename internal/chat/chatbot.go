@@ -92,7 +92,7 @@ const (
 )
 
 const (
-	API_URL = "http://15.165.32.229:11337/chats"
+	API_URL = "http://3.36.180.31:11337/chats"
 )
 
 const (
