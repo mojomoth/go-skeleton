@@ -1,7 +1,6 @@
 module.exports = {
   apps : [{
-    name   : "sos-detection-to-protection",
-    script : "./sos-detection-to-protection",
-    cron_restart: "* * * * *"
+    name   : "go-skeleton",
+    script : "./go-skeleton",
   }]
 }

@@ -1,5 +1,5 @@
 #!/bin/bash
 
-PNAME=sos-detection-to-protection
+PNAME=go-skeleton
 
 go build cmd/main.go && mv main $PNAME

@@ -1,3 +1,3 @@
-module github.com/dev-zipida-com/sos-detection-to-protection
+module github.com/mojomoth/go-skeleton
 
 go 1.16

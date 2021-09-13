@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PNAME=sos-detection-to-protection
+PNAME=go-skeleton
 
 nohup ./$PNAME &
 

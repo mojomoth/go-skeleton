@@ -1,6 +1,6 @@
 package main
 
-import "github.com/dev-zipida-com/sos-detection-to-protection/pkg"
+import "github.com/mojomoth/go-skeleton/pkg"
 
 func main() {
 	pkg.Start()
