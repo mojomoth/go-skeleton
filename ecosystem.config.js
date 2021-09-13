@@ -1,6 +1,7 @@
 module.exports = {
   apps : [{
-    name   : "sos-chat",
-    script : "./sos-chat"
+    name   : "sos-detection-to-protection",
+    script : "./sos-detection-to-protection",
+    cron_restart: "* * * * *"
   }]
 }

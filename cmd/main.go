@@ -1,7 +1,7 @@
 package main
 
-import "github.com/dev-zipida-com/sos-ws/pkg/server"
+import "github.com/dev-zipida-com/sos-detection-to-protection/pkg"
 
 func main() {
-	server.Start()
+	pkg.Start()
 }
